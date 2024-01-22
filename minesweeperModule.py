@@ -136,7 +136,7 @@ def filter_clingo_solve(file_path, matrix):
 ###################################
 ###################################
 
-lp_path = "c:/Users/errik/Desktop/WU/DE/Third Semester/DSAI/project_Axel/minesweeper.lp"
+lp_path = "minesweeper.lp"
 url = "https://minesweeper.online/new-game"
 driver = webdriver.Chrome()
 driver.get(url)

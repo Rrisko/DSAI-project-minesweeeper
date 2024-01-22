@@ -5,7 +5,7 @@ Minesweeper project uses Answer set programming and Python selenium module to so
 **Scripts in the repo:**
 - ```minesweeperModule.py``` with all functions and classes defintions
 - ```minesweeper.lp``` used for writing constraints and facts about the game
-- ```callMinesweeper``` which plays the game and references the first two files
+- ```playGame.py``` which plays the game and references the first two files
 
 ## How does it work?
 
