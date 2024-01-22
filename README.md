@@ -7,6 +7,12 @@ Minesweeper project uses Answer set programming and Python selenium module to so
 - ```minesweeper.lp``` used for writing constraints and facts about the game
 - ```playGame.py``` which plays the game and references the first two files
 
+## How to run?
+
+To play, you need to run playGame script or import playGame() function form it and run it. Make sure you have installed the required libraries.
+
+Alternatively, you can also watch recordings of the script at work (folder recordings).
+
 ## How does it work?
 
 ### Answer set programming

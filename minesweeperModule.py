@@ -7,14 +7,23 @@ import clingo
 import numpy as np
 
 
-def click_id(driver, cid):
+def click_id(driver: webdriver, cid: str):
+    """Clicks element on the webpage by id (input cid)"""
+
     stock_code = WebDriverWait(driver, 2).until(
         EC.element_to_be_clickable((By.ID, cid))
     )
     stock_code.click()
 
 
-def knowledge_matrix_conversion(matrix, dim=9):
+def knowledge_matrix_conversion(matrix, dim: int = 9) -> np.array:
+    """
+    Outputs a matrix of the game grid.
+    Value 1 means complete information,
+    0 means no information,
+    2 means the cell borders a cell with complete information
+    """
+
     output_matrix = matrix.copy()
     for i in range(dim):
         for j in range(dim):
@@ -31,7 +40,12 @@ def knowledge_matrix_conversion(matrix, dim=9):
     return output_matrix
 
 
-def get_clingo_input(driver, dim=9):
+def get_clingo_input(driver: webdriver, dim: int = 9) -> tuple[str, np.array]:
+    """
+    Gets information from web in clingo format: value(X,Y,Value).
+    Also outputs knowledge matrix (see knowledge_matrix conversion).
+    """
+
     cell_list = []
     knowledge_matrix = np.zeros((dim, dim), dtype=int)
 
@@ -53,7 +67,9 @@ def get_clingo_input(driver, dim=9):
     return clingo_input, knowledge_matrix_conversion(knowledge_matrix, dim)
 
 
-def return_matching_strings(matrix):
+def return_matching_strings(matrix: np.array) -> list:
+    """Returns matches knowledge matrix cells with value 2 in clingo format: value(X,Y or bomb(X,Y)"""
+
     output_list = []
     indices = np.where(matrix == 2)
 
@@ -63,22 +79,27 @@ def return_matching_strings(matrix):
     return output_list
 
 
-def filter_clingo_output(matches, output):
+def filter_clingo_output(matches, output) -> list:
+    """Filters output of clingo - only solutions that overlap with matches are returned"""
+
     return [
         string for string in output if any(substring in string for substring in matches)
     ]
 
 
-def write_clingo_file(file_path, clingo_input):
+def write_clingo_file(file_path: str, clingo_input: str, dim: int = 9):
+    """Writes constraints and facts to clingo file."""
+
     with open(file_path, "w") as file:
-        # Add a new line
         file.write(
-            """
+            f"""
 
 % Cell has X,Y coordinates
 % In begginer's game, grid is 9x9
 
-cell(X, Y) :- 0 <= X <= 8 , 0 <= Y <= 8.
+cell(X, Y) :- 0 <= X <= {dim} , 0 <= Y <= {dim}.
+"""
+            + """
 
 % Cell either has a value (0-8) or a bomb
 1 = {value(X, Y, V) : 0 <= V <= 8 ; bomb(X, Y)} :- cell(X, Y).
@@ -104,7 +125,9 @@ V = {bomb(X2, Y2) : neighbour(X2, Y2, X, Y)} :- value(X, Y, V).
         file.write("#show value/3.")
 
 
-def clingo_solve(file_path):
+def clingo_solve(file_path) -> list:
+    """Gets solution from .lp file using clingo"""
+
     ctl = clingo.Control()
 
     ctl.load(file_path)
@@ -119,7 +142,9 @@ def clingo_solve(file_path):
     return models[0].split()
 
 
-def filter_clingo_solve(file_path, matrix):
+def filter_clingo_solve(file_path: str, matrix: np.array) -> list:
+    """Filters clingo output for matches (knowledge matrix field = 2)"""
+
     solved_list = clingo_solve(file_path)
     matches = return_matching_strings(matrix)
     filtered_solved_list = filter_clingo_output(matches, solved_list)
@@ -130,43 +155,3 @@ def filter_clingo_solve(file_path, matrix):
     ]
 
     return left_clicks
-
-
-###################################
-###################################
-###################################
-
-lp_path = "minesweeper.lp"
-url = "https://minesweeper.online/new-game"
-driver = webdriver.Chrome()
-driver.get(url)
-
-time.sleep(2)
-
-click_id(driver, "cell_4_4")
-
-clingo_input, mx = get_clingo_input(driver, 9)
-
-write_clingo_file(lp_path, clingo_input)
-
-left_clicks = filter_clingo_solve(lp_path, mx)
-
-solved = False
-
-
-while not solved:
-    face_class = driver.find_element(By.ID, "top_area_face").get_attribute("class")
-    if face_class == "top-area-face zoomable hd_top-area-face-unpressed":
-        solved = False
-    else:
-        solved = True
-
-    click_id(driver, left_clicks[0])
-
-    clingo_input, mx = get_clingo_input(driver, 9)
-
-    write_clingo_file(lp_path, clingo_input)
-
-    left_clicks = filter_clingo_solve(lp_path, mx)
-
-time.sleep(30)
