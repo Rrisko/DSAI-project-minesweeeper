@@ -97,7 +97,7 @@ def write_clingo_file(file_path: str, clingo_input: str, dim: int = 9):
 % Cell has X,Y coordinates
 % In begginer's game, grid is 9x9
 
-cell(X, Y) :- 0 <= X <= {dim} , 0 <= Y <= {dim}.
+cell(X, Y) :- 0 <= X <= {dim-1} , 0 <= Y <= {dim-1}.
 """
             + """
 
@@ -120,15 +120,15 @@ V = {bomb(X2, Y2) : neighbour(X2, Y2, X, Y)} :- value(X, Y, V).
         # Add input
         file.write(clingo_input)
         file.write("\n")
-        file.write("#show bomb/2.")
-        file.write("\n")
         file.write("#show value/3.")
 
 
-def clingo_solve(file_path) -> list:
+def clingo_solve(file_path, clingo_input, model_count, dim: int = 9) -> list:
     """Gets solution from .lp file using clingo"""
 
-    ctl = clingo.Control()
+    write_clingo_file(file_path, clingo_input, dim)
+
+    ctl = clingo.Control("9")
 
     ctl.load(file_path)
     ctl.ground([("base", [])])
@@ -139,19 +139,40 @@ def clingo_solve(file_path) -> list:
         for model in handle:
             models.append(format(model))
 
-    return models[0].split()
+    try:
+        models = [m.split() for m in models]
+        models_set = set(models[0]).intersection(*models[1:])
+        models_list = list(models_set)
+
+        if model_count > 1:
+            return models_list
+
+        return models[0]
+
+    except:
+        return models[0]
 
 
-def filter_clingo_solve(file_path: str, matrix: np.array) -> list:
+def filter_clingo_solve(file_path: str, clingo_input, matrix: np.array) -> list:
     """Filters clingo output for matches (knowledge matrix field = 2)"""
 
-    solved_list = clingo_solve(file_path)
+    solved_list = clingo_solve(file_path, clingo_input, 9)
     matches = return_matching_strings(matrix)
+
     filtered_solved_list = filter_clingo_output(matches, solved_list)
     left_clicks = [
         "cell_{}_{}".format(s[6:7], s[8:9])
         for s in filtered_solved_list
         if s.startswith("value")
     ]
+
+    if len(left_clicks) < 1:
+        solved_list = clingo_solve(file_path, clingo_input, 1)
+        filtered_solved_list = filter_clingo_output(matches, solved_list)
+        left_clicks = [
+            "cell_{}_{}".format(s[6:7], s[8:9])
+            for s in filtered_solved_list
+            if s.startswith("value")
+        ]
 
     return left_clicks
