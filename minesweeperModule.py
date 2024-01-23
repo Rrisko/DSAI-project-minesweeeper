@@ -123,8 +123,16 @@ V = {bomb(X2, Y2) : neighbour(X2, Y2, X, Y)} :- value(X, Y, V).
         file.write("#show value/3.")
 
 
-def clingo_solve(file_path, clingo_input, model_count, dim: int = 9) -> list:
-    """Gets solution from .lp file using clingo"""
+def clingo_solve(
+    file_path: str, clingo_input: str, model_count: int, dim: int = 9
+) -> list:
+    """
+    Gets solution from .lp file using clingo.
+    First, it writes the .lp file, then outputs solution.
+
+    Output can be either the overlap of 9 different models clingo outputs or the first model.
+    In general, you should try to get the overlap solution as it has fewer flaws, but in some instances, the overlap set can be empty.
+    """
 
     write_clingo_file(file_path, clingo_input, dim)
 
@@ -139,10 +147,13 @@ def clingo_solve(file_path, clingo_input, model_count, dim: int = 9) -> list:
         for model in handle:
             models.append(format(model))
 
+    # first tries intersection approach
     try:
         models = [m.split() for m in models]
         models_set = set(models[0]).intersection(*models[1:])
         models_list = list(models_set)
+
+        # if not, then return first model
 
         if model_count > 1:
             return models_list

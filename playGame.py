@@ -4,7 +4,7 @@ from minesweeperModule import *
 def playGame():
     lp_path = "minesweeper.lp"
     url = "https://minesweeper.online/new-game"
-    first_cell = "cell_0_0"
+    first_cell = "cell_0_0"  # you can also try middle cell: "cell_4_4"
 
     # Connect to the website
     driver = webdriver.Chrome()
@@ -44,8 +44,10 @@ def playGame():
             solved = True
 
 
+# Three runs of the game
+
 if __name__ == "__main__":
-    for i in range(10):
+    for i in range(3):
         try:
             playGame()
         except IndexError:
