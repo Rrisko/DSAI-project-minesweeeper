@@ -13,7 +13,7 @@ To play, you need to run playGame script or import playGame() function form it a
 
 Alternatively, you can also watch recordings of the script at work (folder recordings).
 
-or here https://www.youtube.com/watch?v=2-9qrc0hvPM (10 runs, at x4 spees).
+or here https://www.youtube.com/watch?v=2-9qrc0hvPM (10 runs, at x4 speed).
 
 Please do not run the file too often, if you overwhelm the website with too many requests, you will be blocked.
 
@@ -55,7 +55,7 @@ https://minesweeper.online/ has a simple page structure, allowing us to refer to
 
 ### Interaction with clingo
 
-The program runs in loops, each loop extracts the available information from the web game, formats it as facts for clingo and writes it in the ```minesweeeper.lp``` file. Next, clingo solver is called, and it outputs facts about all cells. This output is filtered only for the cells neighbouring the uncovered region. A cell, which is deemed as safe, is clicked on, starting a new iteration of the loop.
+The program runs in loops, each loop extracts the available information from the web game, formats it as facts for clingo and writes it in the ```minesweeper.lp``` file. Next, clingo solver is called, and it outputs facts about all cells. This output is filtered only for the cells neighbouring the uncovered region. A cell, which is deemed as safe, is clicked on, starting a new iteration of the loop.
 
 Looping terminates with game's end: either by uncovering all safe cells or hitting a mine.
 
