@@ -13,6 +13,8 @@ To play, you need to run playGame script or import playGame() function form it a
 
 Alternatively, you can also watch recordings of the script at work (folder recordings).
 
+or here https://www.youtube.com/watch?v=2-9qrc0hvPM
+
 ## How does it work?
 
 ### Answer set programming
@@ -57,7 +59,8 @@ Looping terminates with game's end: either by uncovering all safe cells or hitti
 
 ### Limitations
 
-Clingo outputs possible solution for given configuation, but not necessary the correct one. This leads to hitting bombs in cells, clingo finds safe.
+Clingo outputs a possible solution for given configuation, but not necessary the correct one. This leads to hitting bombs in cells, clingo finds safe.
+When possible, the program pools multiple solutions and finds an intersection, but even this is not flawless.
 Bomb can be also hit by chance, as the first step in the game is always a guess.
 
 ### Recordings
