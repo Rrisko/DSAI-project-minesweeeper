@@ -13,7 +13,9 @@ To play, you need to run playGame script or import playGame() function form it a
 
 Alternatively, you can also watch recordings of the script at work (folder recordings).
 
-or here https://www.youtube.com/watch?v=2-9qrc0hvPM
+or here https://www.youtube.com/watch?v=2-9qrc0hvPM (10 runs, at x4 spees).
+
+Please do not run the file too often, if you overwhelm the website with too many requests, you will be blocked.
 
 ## How does it work?
 
